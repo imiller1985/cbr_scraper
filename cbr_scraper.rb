@@ -4,7 +4,6 @@ require 'pry'
 require 'capybara'
 
 url = 'http://www.cbr.washington.edu/dart/query/adult_daily'
-search_url = 'http://www.cbr.washington.edu/dart/cs/php/rpt/adult_daily.php?sc=1&outputFormat=html&year=2015&proj=#{project}&span=no&startdate=1%2F1&enddate=12%2F31&run=&s#{year}=2015&eyear=#{year}'
 directory_name = "fish_counts"
 
 Dir.mkdir(directory_name) unless File.exists?(directory_name)
@@ -26,12 +25,18 @@ doc.css("select")[1].children.each do |project|
   end
 end
 
-def test_scrape(search_url, years, projects)
+def test_scrape(years, projects)
   years.each do |year|
     projects.each do |project|
-      puts "http://www.cbr.washington.edu/dart/cs/php/rpt/adult_daily.php?sc=1&outputFormat=csv&year=#{year}&proj=#{project}&span=no&startdate=1%2F1&enddate=12%2F31&run=&s#{year}=2015&eyear=#{year}"
+      csv = "http://www.cbr.washington.edu/dart/cs/php/rpt/adult_daily.php?sc=1&outputFormat=csv&year=#{year}&proj=#{project}&span=no&startdate=1%2F1&enddate=12%2F31&run=&syear=#{year}&eyear=#{year}"
+      remote_data = open(csv).read
+      if remote_data.include?("Project,Date,Chinook Run,Chin,JChin,Stlhd,WStlhd,Sock,Coho,JCoho,Shad,Lmpry,BTrout,TempC")
+        my_local_file = open("fish_counts/project-#{project}-year-#{year}.csv", "w")
+        my_local_file.write(remote_data)
+        my_local_file.close
+      end
     end
   end
 end
 
-test_scrape(search_url, years, projects)
+test_scrape(years, projects)
