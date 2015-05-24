@@ -9,6 +9,7 @@ Dir.mkdir(directory_name) unless File.exists?(directory_name)
 
 doc = Nokogiri::HTML(open(url).read)
 
+#finds all years available for searching fish counts
 years = Array.new
 doc.css("select").first.children.each do |year|
   year = year.children.text
@@ -17,6 +18,7 @@ doc.css("select").first.children.each do |year|
   end
 end
 
+#finds all projects for which fish counts are avaiable
 projects = Array.new
 doc.css("select")[1].children.each do |project|
   if !project.children.empty?
@@ -24,6 +26,8 @@ doc.css("select")[1].children.each do |project|
   end
 end
 
+#attempts to download fish counts for all years and projects, if valid it
+#creates a new csv containing the counts
 def daily_count_scrape(years, projects)
   years.each do |year|
     projects.each do |project|
