@@ -1,7 +1,5 @@
 require 'nokogiri'
 require 'open-uri'
-require 'pry'
-require 'capybara'
 
 url = 'http://www.cbr.washington.edu/dart/query/adult_daily'
 directory_name = "fish_counts"
@@ -25,12 +23,12 @@ doc.css("select")[1].children.each do |project|
   end
 end
 
-def test_scrape(years, projects)
+def daily_count_scrape(years, projects)
   years.each do |year|
     projects.each do |project|
-      csv = "http://www.cbr.washington.edu/dart/cs/php/rpt/adult_daily.php?sc=1&outputFormat=csv&year=#{year}&proj=#{project}&span=no&startdate=1%2F1&enddate=12%2F31&run=&syear=#{year}&eyear=#{year}"
+      csv = "http://www.cbr.washington.edu/dart/cs/php/rpt/adult_daily.php?sc=1&outputFormat=csv&year=#{year}&proj=#{project}&span=no&startdate=1%2F1&enddate=12%2F31&run=&syear=#{year}&eyear=#{year}&avg=1"
       remote_data = open(csv).read
-      if remote_data.include?("Project,Date,Chinook Run,Chin,JChin,Stlhd,WStlhd,Sock,Coho,JCoho,Shad,Lmpry,BTrout,TempC")
+      if remote_data.include?("Project,Date,Chinook Run")
         my_local_file = open("fish_counts/project-#{project}-year-#{year}.csv", "w")
         my_local_file.write(remote_data)
         my_local_file.close
@@ -39,4 +37,4 @@ def test_scrape(years, projects)
   end
 end
 
-test_scrape(years, projects)
+daily_count_scrape(years, projects)
