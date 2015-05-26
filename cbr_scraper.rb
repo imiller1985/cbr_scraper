@@ -33,8 +33,8 @@ def daily_count_scrape(years, projects)
     projects.each do |project|
       csv = "http://www.cbr.washington.edu/dart/cs/php/rpt/adult_daily.php?sc=1&outputFormat=csv&year=#{year}&proj=#{project}&span=no&startdate=1%2F1&enddate=12%2F31&run=&syear=#{year}&eyear=#{year}&avg=1"
       remote_data = open(csv).read
-      binding.pry
-      if remote_data.include?("Project,Date,Chinook Run")
+      if !remote_data.include?("DART Query Issue")
+        binding.pry
         my_local_file = open("fish_counts/project-#{project}-year-#{year}.csv", "w")
         my_local_file.write(remote_data)
         my_local_file.close
